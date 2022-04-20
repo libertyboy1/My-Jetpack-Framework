@@ -1,0 +1,73 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+}
+
+android {
+    compileSdk 31
+
+    defaultConfig {
+        minSdk 23
+        targetSdk 31
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    /***********基础框架相关开始************/
+    api 'androidx.core:core-ktx:1.7.0'
+    api 'androidx.appcompat:appcompat:1.4.1'
+    api 'com.google.android.material:material:1.5.0'
+    /***********基础框架相关结束************/
+
+    /***********Jetpack框架相关开始************/
+    api 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0-alpha03'
+    api 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0-alpha03'
+    api 'androidx.core:core-ktx:1.7.0'
+    api 'androidx.fragment:fragment-ktx:1.4.1'
+    api 'androidx.activity:activity-ktx:1.4.0'
+    api 'androidx.collection:collection-ktx:1.2.0'
+    /***********Jetpack框架相关结束************/
+
+    /***********RxJava相关开始************/
+    api 'io.reactivex.rxjava3:rxandroid:3.0.0'
+    api 'io.reactivex.rxjava3:rxjava:3.0.4'
+    /***********RxJava相关结束************/
+
+    /***********网络请求框架相关开始************/
+    api 'com.squareup.retrofit2:retrofit:2.9.0'
+    api 'com.squareup.retrofit2:converter-gson:2.4.0'
+    api 'com.squareup.retrofit2:adapter-rxjava3:2.9.0'
+    api 'com.squareup.okhttp3:logging-interceptor:4.9.1'
+    /***********网络请求框架相关结束************/
+
+    /***********图片加载框架相关开始************/
+    api 'com.github.bumptech.glide:glide:4.13.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.13.0'
+    api 'com.github.bumptech.glide:okhttp3-integration:4.13.0'
+    /***********图片加载框架相关结束************/
+
+    /***********Observable生命周期管理开始************/
+    api 'com.trello.rxlifecycle4:rxlifecycle-kotlin:4.0.2'
+    api 'com.trello.rxlifecycle4:rxlifecycle-android:4.0.2'
+    api 'com.trello.rxlifecycle4:rxlifecycle-components:4.0.2'
+    /***********Observable生命周期管理结束************/
+}
