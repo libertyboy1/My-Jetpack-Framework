@@ -2,10 +2,12 @@ package com.jetpack.support.ui
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
+import androidx.lifecycle.MutableLiveData
 import com.google.android.material.appbar.MaterialToolbar
 import com.jetpack.support.BaseViewModel
 import com.jetpack.support.api.sendRequest
@@ -14,7 +16,7 @@ import com.trello.rxlifecycle4.components.support.RxAppCompatActivity
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
 
-abstract class SupportActivity<B : ViewDataBinding, P : BasePresenter, V : BaseViewModel>():
+abstract class SupportActivity<B : ViewDataBinding, P : BasePresenter, V : BaseViewModel>() :
     RxAppCompatActivity() {
 
     fun getRetrofit() = BaseApplication.instance.getRetrofit()
@@ -26,6 +28,15 @@ abstract class SupportActivity<B : ViewDataBinding, P : BasePresenter, V : BaseV
     private val missingPermissionList = arrayListOf<String>()
     private val secondMissingPermissionList = arrayListOf<String>()
     lateinit var toolBarView: MaterialToolbar
+    /***
+     * 网络请求响应参数的全局观察类全称 - 包名+类名（格式：packageName.classname）
+     * **/
+    abstract val responseClass:String
+    val requests: MutableLiveData<ArrayList<Observable<*>?>> by lazy {
+        MutableLiveData()
+    }
+    private var requestIsWhole = true
+
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) {
@@ -82,8 +93,8 @@ abstract class SupportActivity<B : ViewDataBinding, P : BasePresenter, V : BaseV
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        lifecycle.addObserver(mPresenter)
         binding.lifecycleOwner = this
+        lifecycle.addObserver(mPresenter)
         if (isHaveToolbar) {
             toolBarView = binding.root.findViewById(com.jetpack.support.R.id.materialToolbar)
             setSupportActionBar(toolBarView)
@@ -91,25 +102,40 @@ abstract class SupportActivity<B : ViewDataBinding, P : BasePresenter, V : BaseV
                 onBackPressed()
             }
         }
-    }
 
-    fun setRequest(
-        isWhole: Boolean,
-        onSuccess: (it: Any) -> Unit,
-        onComplete: () -> Unit
-    ) {
-        if (getRequestList().isNullOrEmpty()){
-            throw Exception("网络请求接口集合\"getRequestList()\"不能为空")
-        }else{
-            sendRequest(isWhole, {mPresenter.currentRequestDisposable = it}, onSuccess,  onComplete, vm.requests.apply { value = getRequestList() })
+
+        requests.observe(this) {
+            if (!it.isNullOrEmpty()) {
+                sendRequest(
+                    requestIsWhole,
+                    Class.forName(responseClass),
+                    { mPresenter.currentRequestDisposable = it },
+                    {mPresenter.onRequestSuccess(it)},
+                    { mPresenter.onRequestComplete() },
+                    requests
+                )
+
+            }
         }
 
     }
 
-    /**
-     * 网络接口请求集合
-     * 请求顺序遵循先入先出原则
-     */
-    abstract fun getRequestList():ArrayList<Observable<*>?>?
+    fun setRequestIsWhole(requestIsWhole:Boolean){
+        this.requestIsWhole = requestIsWhole
+    }
+
+    fun sendRequest(vararg requests:Observable<*>?,responseClass:String){
+        sendRequest(
+            requestIsWhole,
+            Class.forName(responseClass),
+            { mPresenter.currentRequestDisposable = it },
+            {mPresenter.onRequestSuccess(it)},
+            { mPresenter.onRequestComplete() },
+            MutableLiveData<ArrayList<Observable<*>?>>().apply {
+                value = ArrayList(requests.asList())
+            }
+        )
+    }
+
 
 }

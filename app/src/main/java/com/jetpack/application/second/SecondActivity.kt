@@ -1,4 +1,4 @@
-package com.jetpack.application.index
+package com.jetpack.application.second
 
 import android.os.Bundle
 import androidx.activity.viewModels
@@ -7,15 +7,14 @@ import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.jetpack.application.AppBaseActivity
 import com.jetpack.application.R
+import com.jetpack.application.api.AppRetrofitService
 import com.jetpack.application.databinding.ActivityMainBinding
 import com.jetpack.application.index.fragment.IndexFragment
 import com.jetpack.application.model.ResponseLiveData
-import com.jetpack.application.second.SecondActivity
 import com.jetpack.support.util.getFragmentInstance
-import com.jetpack.support.util.startActivity
 
-class IndexActivity :
-    AppBaseActivity<ActivityMainBinding, IndexActivityPresenter, IndexActivityViewModel>() {
+class SecondActivity :
+    AppBaseActivity<ActivityMainBinding, SecondActivityPresenter, SecondActivityViewModel>() {
 
     override val isHaveToolbar: Boolean = true
 
@@ -27,16 +26,12 @@ class IndexActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-//        binding.indexVM = vm
-//        binding.recyclerView.layoutManager = LinearLayoutManager(this)
-//        binding.recyclerView.adapter = MyAdapter()
-
         binding.viewPager.adapter = MyAdapter()
 
-        vm.tempData.value = arrayListOf("5")
+        vm.tempData.value = arrayListOf("9")
 
         binding.btn1.setOnClickListener {
-            vm.tempData.value = arrayListOf("5", "6", "7")
+            vm.tempData.value = arrayListOf("11", "12", "13")
         }
 
 //        requests.value = arrayListOf(
@@ -45,25 +40,16 @@ class IndexActivity :
 //            ).getAppStatus()
 //        )
 
-        binding.btn2.setOnClickListener {
-            startActivity<SecondActivity>()
-        }
-
-//        sendRequest(
-//            getRetrofit().create(
-//                AppRetrofitService::class.java
-//            ).getAppStatus()
-//        )
 
     }
 
     override fun permissionIsGranted(isGranted: Boolean) {
     }
 
-    override fun getPresenterInstance(): IndexActivityPresenter =
-        IndexActivityPresenter(lifecycle, this)
+    override fun getPresenterInstance(): SecondActivityPresenter =
+        SecondActivityPresenter(lifecycle, this)
 
-    override val vm: IndexActivityViewModel by viewModels()
+    override val vm: SecondActivityViewModel by viewModels()
     override val binding: ActivityMainBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_main)
     }

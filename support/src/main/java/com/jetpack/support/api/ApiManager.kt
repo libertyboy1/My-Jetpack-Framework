@@ -1,15 +1,13 @@
 package com.jetpack.support.api
 
 import com.google.gson.GsonBuilder
+import com.orhanobut.logger.Logger
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import java.util.concurrent.TimeUnit
-import java.util.logging.Level
-import java.util.logging.Logger
 
 class ApiManager private constructor() {
     private val DEFAULT_TIMEOUT: Long = 60
@@ -29,9 +27,9 @@ class ApiManager private constructor() {
         HttpLoggingInterceptor { message ->
             try {
                gson.fromJson(message, Objects::class.java)
-//                Logger.json()
+               Logger.json(message)
             } catch (e: Exception) {
-//                Logger.d(message)
+                Logger.d(message)
             }
         }
 

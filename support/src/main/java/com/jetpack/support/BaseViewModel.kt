@@ -7,8 +7,4 @@ import io.reactivex.rxjava3.core.Observable
 
 abstract class BaseViewModel(private val app: Application) : AndroidViewModel(app) {
 
-    val requests: MutableLiveData<ArrayList<Observable<*>?>> by lazy {
-        MutableLiveData()
-    }
-
 }
